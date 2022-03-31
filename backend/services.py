@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 import passlib.hash
 
-import database
+import _database
 import models
 import schemas
 
@@ -19,11 +19,11 @@ def wich_info(info: str) -> str:
 
 
 def create_database():
-    return database.Base.metadata.create_all(bind=database.engine)
+    return _database.Base.metadata.create_all(bind=_database.engine)
 
 
 def get_database():
-    db = database.SessionLocal()
+    db = _database.SessionLocal()
 
     try:
         return db
