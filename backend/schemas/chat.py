@@ -4,15 +4,15 @@ import typing
 from ._metaclasses import _BASECLASS, _CREATIONCLASS
 from .message import Message
 
-class ConversationBase(_BASECLASS):
+class ChatBase(_BASECLASS):
     messages: typing.List[Message]
 
 
-class ConversationCreate(ConversationBase, _CREATIONCLASS):
+class ChatCreate(ChatBase, _CREATIONCLASS):
     pass
 
 
-class Conversation(ConversationBase, _CREATIONCLASS):
+class Chat(ChatBase, _CREATIONCLASS):
     id: int
     first_id: int
     second_id: int

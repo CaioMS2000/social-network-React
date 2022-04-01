@@ -5,11 +5,25 @@ import sqlalchemy.orm
 from datetime import datetime
 
 import services
-import models
+import database
 import schemas
 
 services.create_database()
 app = fastapi.FastAPI()
+app.state.database = database._database
+
+@app.on_event("startup")
+async def startup() -> None:
+    database_ = app.state.database
+    if not database_.is_connected:
+        await database_.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    database_ = app.state.database
+    if database_.is_connected:
+        await database_.disconnect()
 
 @app.post("/api/token")
 async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends(), db: sqlalchemy.orm.Session = fastapi.Depends(services.get_database)):

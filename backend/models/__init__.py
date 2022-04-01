@@ -1,5 +1,5 @@
 from .comment import Comment
-from .conversation import Conversation
+from .chat import Chat
 from .friendship import Friendship
 from .like import Like
 from .message import Message

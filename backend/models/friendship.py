@@ -1,31 +1,17 @@
-#Ormar
 import ormar
 from datetime import datetime
 
-from ._metaclass import _Meta
+from ._metaclass import META
 from .user import User
 
 class Friendship(ormar.Model):
-    class Meta(_Meta):
+    class Meta(META):
+        # constraints = [ormar.PrimaryKeyConstraint("id", "sender_id", "receiver_id")]
         pass
 
-    sender_id = ormar.ForeignKey(User, primary_key=True, index=True)
-    receiver_id = ormar.ForeignKey(User, primary_key=True, index=True)
+    id = ormar.Integer(primary_key=True, autoincrement=True)
+    # sender_id = ormar.ForeignKey(User, primary_key=True, index=True)
+    # receiver_id = ormar.ForeignKey(User, primary_key=True, index=True)
+    sender_id = ormar.ForeignKey(User, related_name="friendship_A_side", index=True)
+    receiver_id = ormar.ForeignKey(User, related_name="friendship_B_side", index=True)
     created_at = ormar.DateTime(default=datetime.now)
-
-# just SQLAlchemy
-"""
-import sqlalchemy
-import sqlalchemy.orm
-from datetime import datetime
-
-import _database
-
-class Friendship(_database.Base):
-    __tablename__="friendships"
-    sender_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), primary_key=True, index=True)
-    receiver_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"), primary_key=True, index=True)
-    sender = sqlalchemy.orm.relationship("User", foreign_keys=[sender_id])
-    receiver = sqlalchemy.orm.relationship("User", foreign_keys=[receiver_id])
-    created_at = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.now())
-"""

@@ -1,8 +1,9 @@
-import _database
+from database import _database
+from database import _metadata
 
-class _Meta():
-    database = _database.database
-    metadata = _database.metadata
+class META():
+    database = _database
+    metadata = _metadata
 """
 class _META(ormar.Model):
     class META:

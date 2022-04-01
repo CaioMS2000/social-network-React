@@ -12,5 +12,5 @@ class MessageCreate(MessageBase, _CREATIONCLASS):
 
 class Message(MessageBase, _CREATIONCLASS):
     id: int
-    conversation_id: int
+    chat_id: int
     created_at: datetime
