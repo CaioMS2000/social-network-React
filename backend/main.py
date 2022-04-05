@@ -1,4 +1,8 @@
+# .\venv\Scripts\activate; uvicorn main:app --reload
 # uvicorn main:app --reload
+import os
+os.system('cls')
+
 import fastapi
 import fastapi.security
 import sqlalchemy.orm
@@ -25,7 +29,23 @@ async def shutdown() -> None:
     if database_.is_connected:
         await database_.disconnect()
 
-@app.post("/api/token")
+
+@app.post("/user")
+async def create_user(user: schemas.UserCreate, db: sqlalchemy.orm.Session = fastapi.Depends(services.get_database)):
+    db_user = await services.get_user(user.username, db)
+
+    if db_user:
+        raise fastapi.HTTPException(status_code=400, detail="Username not available")
+    
+    db_user = await services.get_user(user.email, db)
+
+    if db_user:
+        raise fastapi.HTTPException(status_code=400, detail="Email not available")
+    
+    return await services.create_user(user, db)
+
+
+@app.post("/token")
 async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends(), db: sqlalchemy.orm.Session = fastapi.Depends(services.get_database)):
     user = dict(username=form_data.username, password=form_data.password)
     valid = True
@@ -34,19 +54,3 @@ async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm =
         raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
     
     return await services.create_token()
-
-
-@app.post("/user")
-async def create_user(user: schemas.UserCreate, db: sqlalchemy.orm.Session = fastapi.Depends(services.get_database)):
-    user = await services.get_user(user.username, db)
-
-    if user:
-        raise fastapi.HTTPException(status_code=400, detail="Username not available")
-    
-    user = await services.get_user(user.email, db)
-
-    if user:
-        raise fastapi.HTTPException(status_code=400, detail="Email not available")
-    
-
-    return await services.create_user(user, db)
