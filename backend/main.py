@@ -1,7 +1,8 @@
 # .\venv\Scripts\activate; uvicorn main:app --reload
 # uvicorn main:app --reload
 import os
-os.system('cls')
+# os.system('cls')
+# cls; .\venv\Scripts\activate; uvicorn main:app --reload
 
 import fastapi
 import fastapi.security
@@ -47,6 +48,14 @@ async def create_user(user: schemas.UserCreate, db: sqlalchemy.orm.Session = fas
 
 @app.post("/token")
 async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends(), db: sqlalchemy.orm.Session = fastapi.Depends(services.get_database)):
+    user = await services.authenticate_user(form_data.username, form_data.password, db)
+    # form_data.username -> não é necessariamente o username do usuario; é utilizado "username" apenas por ser padrão da biblioteca
+
+    if not user:
+        raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
+    
+    return await services.create_token(user)
+    """
     user = dict(username=form_data.username, password=form_data.password)
     valid = True
 
@@ -54,3 +63,4 @@ async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm =
         raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
     
     return await services.create_token()
+    """

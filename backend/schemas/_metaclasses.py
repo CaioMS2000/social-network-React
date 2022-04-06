@@ -1,9 +1,10 @@
 import pydantic
 
 class _BASECLASS(pydantic.BaseModel):
-    pass
+    class Config(pydantic.BaseConfig):
+        orm_mode = True
 
 
 class _CREATIONCLASS():
-    class Config:
+    class Config(pydantic.BaseConfig):
         orm_mode = True
