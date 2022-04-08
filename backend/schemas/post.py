@@ -13,4 +13,4 @@ class PostCreate(PostBase, _CREATIONCLASS):
 class Post(PostBase, _CREATIONCLASS):
     id: int
     user_id: int
-    created_at: datetime
+    created_at: str

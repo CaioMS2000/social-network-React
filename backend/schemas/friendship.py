@@ -13,4 +13,4 @@ class FriendshipCreate(FriendshipBase, _CREATIONCLASS):
 class Friendship(FriendshipBase, _CREATIONCLASS):
     receiver_id: int
     sender_id: int
-    created_at: datetime
+    created_at: str

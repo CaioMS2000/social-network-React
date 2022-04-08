@@ -14,5 +14,5 @@ class UserCreate(UserBase, _CREATIONCLASS):
 
 class User(UserCreate, _CREATIONCLASS):
     id: int
-    created_at: datetime
+    created_at: str
     profile_picture: str
