@@ -4,8 +4,8 @@
 
 import fastapi
 import fastapi.security
-import sqlalchemy.orm
-from datetime import datetime
+from fastapi import Form
+from sqlalchemy import alias
 
 import services
 import database
@@ -47,18 +47,23 @@ async def create_user(user: schemas.UserCreate):
 @app.post("/token")
 async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends()):
     user = await services.authenticate_user(form_data.username, form_data.password)
+    #extra = form_data.email
     # form_data.username -> não é necessariamente o username do usuario; é utilizado "username" apenas por ser padrão da biblioteca
 
     if not user:
         raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
     
     return await services.create_token(user)
-    """
-    user = dict(username=form_data.username, password=form_data.password)
-    valid = True
 
-    if not valid:
-        raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
-    
-    return await services.create_token()
-    """
+
+@app.get("/users/me")
+async def get_user(user: schemas.User = fastapi.Depends(services.get_current_user)):
+    print(f"\n\ndepois do return\n\n", flush=True)
+    return user
+
+
+@app.post("/test")
+async def test(username = Form(default=None, alias="username"), password = Form(default=None, alias="password"), email = Form(default=None, alias="emal"), full_name = Form(default=None, alias="full name")):
+    d = {"username": username, "password": password, "email": email, "full_name": full_name}
+    print(f"\n\n{d}\n\n", flush=True)
+    pass
