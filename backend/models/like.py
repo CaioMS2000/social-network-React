@@ -5,7 +5,7 @@ from json import dumps
 from ._metaclass import META
 from .user import User
 from .post import Post
-from Data_serializer import json_serial
+from custom.Data_serializer import json_serial
 
 class Like(ormar.Model):
     class Meta(META):

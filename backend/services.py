@@ -1,19 +1,26 @@
 import fastapi
 import fastapi.security
-import sqlalchemy.orm
 import jwt
 import os
 from dotenv import load_dotenv
 import passlib.hash
 
-import database
 import models
 import schemas
 
 load_dotenv()
 JWT_SECRET = os.getenv("JWT_SECRET")
-oauth2schema = fastapi.security.OAuth2PasswordBearer(tokenUrl="/token")
-oauth2schema2 = fastapi.security.OAuth2PasswordBearer(tokenUrl="/test")
+oauth2schema = fastapi.security.OAuth2PasswordBearer(tokenUrl="/token")#a presença disso que habilita a autentição
+
+def keys_list(_dict):
+    _list = []
+
+    if len(_dict.values()) > 0:
+        for key in _dict.keys():
+            _list.append(key)
+            
+    return _list
+
 
 def wich_info(info: str) -> str:
     pos : int = info.find("@")
@@ -64,7 +71,6 @@ async def create_user(user: schemas.UserCreate):
 
 
 async def get_current_user(token: str = fastapi.Depends(oauth2schema)):
-    print(f"\n\n{token}\n\n", flush=True)
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         user = payload["id"]
@@ -72,7 +78,9 @@ async def get_current_user(token: str = fastapi.Depends(oauth2schema)):
     except:
         raise fastapi.HTTPException(status_code=401, detail="Invalid credentials")
     
-    print(f"\n\n{payload}\n{user}\n\n", flush=True)
+    k = keys_list(payload)
+    print(f"\n\n{k}\n\n", flush=True)
     # return schemas.User.from_orm(user)
     usrfromorm = schemas.User.from_orm(payload)
-    return usrfromorm
+    # usrfromorm = schemas.User(*payload)
+    # return usrfromorm

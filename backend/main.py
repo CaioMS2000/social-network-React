@@ -2,14 +2,15 @@
 # uvicorn main:app --reload
 # cls; .\venv\Scripts\activate; uvicorn main:app --reload
 
+import services
 import fastapi
 import fastapi.security
 from fastapi import Form
 from sqlalchemy import alias
 
-import services
 import database
 import schemas
+from custom._OAuth2PasswordRequestForm import Custom_OAuth2PasswordRequestForm
 
 app = fastapi.FastAPI()
 database._metadata.create_all(database.engine)
@@ -45,7 +46,8 @@ async def create_user(user: schemas.UserCreate):
 
 
 @app.post("/token")
-async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends()):
+async def generate_token(form_data: Custom_OAuth2PasswordRequestForm = fastapi.Depends()):
+# async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends()):
     user = await services.authenticate_user(form_data.username, form_data.password)
     #extra = form_data.email
     # form_data.username -> não é necessariamente o username do usuario; é utilizado "username" apenas por ser padrão da biblioteca

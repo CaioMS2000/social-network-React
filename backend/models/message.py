@@ -5,7 +5,7 @@ from json import dumps
 from ._metaclass import META
 from .chat import Chat
 from .user import User
-from Data_serializer import json_serial
+from custom.Data_serializer import json_serial
 
 class Message(ormar.Model):
     class Meta(META):
