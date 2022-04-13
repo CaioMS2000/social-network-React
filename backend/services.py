@@ -73,14 +73,10 @@ async def create_user(user: schemas.UserCreate):
 async def get_current_user(token: str = fastapi.Depends(oauth2schema)):
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        user = payload["id"]
+        user = await models.User.objects.get_or_none(id= payload["id"])
         
     except:
         raise fastapi.HTTPException(status_code=401, detail="Invalid credentials")
     
-    k = keys_list(payload)
-    print(f"\n\n{k}\n\n", flush=True)
-    # return schemas.User.from_orm(user)
-    usrfromorm = schemas.User.from_orm(payload)
-    # usrfromorm = schemas.User(*payload)
-    # return usrfromorm
+
+    return schemas.User.from_orm(user)

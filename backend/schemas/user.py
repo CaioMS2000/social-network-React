@@ -1,18 +1,24 @@
-from datetime import datetime
+import pydantic
 
-from ._metaclasses import _BASECLASS, _CREATIONCLASS
+from .metaclasses import CONFIG
 
-class UserBase(_BASECLASS):
+class UserBase(pydantic.BaseModel):
     email: str
     full_name: str
     username: str
 
 
-class UserCreate(UserBase, _CREATIONCLASS):
+class UserCreate(UserBase):
     hashed_password: str
 
+    class Config(CONFIG):
+        pass
 
-class User(UserCreate, _CREATIONCLASS):
+
+class User(UserBase):
     id: int
     created_at: str
     profile_picture: str
+
+    class Config(CONFIG):
+        pass

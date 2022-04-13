@@ -6,7 +6,6 @@ import services
 import fastapi
 import fastapi.security
 from fastapi import Form
-from sqlalchemy import alias
 
 import database
 import schemas
@@ -60,7 +59,6 @@ async def generate_token(form_data: Custom_OAuth2PasswordRequestForm = fastapi.D
 
 @app.get("/users/me")
 async def get_user(user: schemas.User = fastapi.Depends(services.get_current_user)):
-    print(f"\n\ndepois do return\n\n", flush=True)
     return user
 
 

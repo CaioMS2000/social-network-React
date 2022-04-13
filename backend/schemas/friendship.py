@@ -1,16 +1,18 @@
-from datetime import datetime
+import pydantic
 
-from ._metaclasses import _BASECLASS, _CREATIONCLASS
+from .metaclasses import CONFIG
 
-class FriendshipBase(_BASECLASS):
-    pass
-
-
-class FriendshipCreate(FriendshipBase, _CREATIONCLASS):
-    pass
-
-
-class Friendship(FriendshipBase, _CREATIONCLASS):
+class FriendshipBase(pydantic.BaseModel):
     receiver_id: int
     sender_id: int
     created_at: str
+
+
+class FriendshipCreate(FriendshipBase):
+    class Config(CONFIG):
+        pass
+
+
+class Friendship(FriendshipCreate):
+    class Config(CONFIG):
+        pass

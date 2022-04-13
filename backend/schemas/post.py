@@ -1,16 +1,20 @@
-from datetime import datetime
+import pydantic
 
-from ._metaclasses import _BASECLASS, _CREATIONCLASS
+from .metaclasses import CONFIG
 
-class PostBase(_BASECLASS):
-    pass
-
-class PostCreate(PostBase, _CREATIONCLASS):
-    image: str
+class PostBase(pydantic.BaseModel):
     inner_text: str
-
-
-class Post(PostBase, _CREATIONCLASS):
     id: int
     user_id: int
     created_at: str
+
+class PostCreate(PostBase):
+    image: str
+
+    class Config(CONFIG):
+        pass
+
+
+class Post(PostBase):
+    class Config(CONFIG):
+        pass

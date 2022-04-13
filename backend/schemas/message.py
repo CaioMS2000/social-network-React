@@ -1,16 +1,20 @@
-from datetime import datetime
+import pydantic
 
-from ._metaclasses import _BASECLASS, _CREATIONCLASS
+from .metaclasses import CONFIG
 
-class MessageBase(_BASECLASS):
+class MessageBase(pydantic.BaseModel):
     read: bool
-
-
-class MessageCreate(MessageBase, _CREATIONCLASS):
-    inner_text: str
-
-
-class Message(MessageBase, _CREATIONCLASS):
     id: int
     chat_id: int
     created_at: str
+    inner_text: str
+
+
+class MessageCreate(MessageBase):
+    class Config(CONFIG):
+        pass
+
+
+class Message(MessageBase):
+    class Config(CONFIG):
+        pass

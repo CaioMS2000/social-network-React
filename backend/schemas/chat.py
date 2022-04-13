@@ -1,18 +1,21 @@
-from datetime import datetime
 import typing
+import pydantic
 
-from ._metaclasses import _BASECLASS, _CREATIONCLASS
+from .metaclasses import CONFIG
 from .message import Message
 
-class ChatBase(_BASECLASS):
+class ChatBase(pydantic.BaseModel):
     messages: typing.List[Message]
-
-
-class ChatCreate(ChatBase, _CREATIONCLASS):
-    pass
-
-
-class Chat(ChatBase, _CREATIONCLASS):
     id: int
     first_id: int
     second_id: int
+
+
+class ChatCreate(ChatBase):
+    class Config(CONFIG):
+        pass
+
+
+class Chat(ChatBase):
+    class Config(CONFIG):
+        pass
