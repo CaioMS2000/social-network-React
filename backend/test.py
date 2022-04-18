@@ -39,3 +39,4 @@ print(vec)
 
 print(vec.keys_list())
 print(vec[(vec.keys_list())[0]])
+print(json_serial(datetime.now()))

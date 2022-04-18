@@ -12,16 +12,6 @@ load_dotenv()
 JWT_SECRET = os.getenv("JWT_SECRET")
 oauth2schema = fastapi.security.OAuth2PasswordBearer(tokenUrl="/token")#a presença disso que habilita a autentição
 
-def keys_list(_dict):
-    _list = []
-
-    if len(_dict.values()) > 0:
-        for key in _dict.keys():
-            _list.append(key)
-            
-    return _list
-
-
 def wich_info(info: str) -> str:
     pos : int = info.find("@")
 
@@ -54,6 +44,7 @@ async def create_token(user: models.User):
     return dict(access_token=token, token_type="bearer")
 
 
+#================ USER: =================================
 async def get_user(user_info: str):
     info: str = wich_info(user_info)
 
@@ -80,3 +71,14 @@ async def get_current_user(token: str = fastapi.Depends(oauth2schema)):
     
 
     return schemas.User.from_orm(user)
+#================ :USER =================================
+
+#================ CHAT: =================================
+async def get_chat(id1: int, id2: int):
+    chat = await models.Chat.objects.get_or_none(first_id= id1, second_id= id2)
+
+    if chat == None:
+        chat = await models.Chat.objects.get_or_none(first_id= id2, second_id= id1)
+    
+    return chat
+#================ :CHAT =================================

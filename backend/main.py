@@ -5,10 +5,10 @@
 import services
 import fastapi
 import fastapi.security
-from fastapi import Form
 
 import database
 import schemas
+import models
 from custom._OAuth2PasswordRequestForm import Custom_OAuth2PasswordRequestForm
 
 app = fastapi.FastAPI()
@@ -29,7 +29,7 @@ async def shutdown() -> None:
         await database_.disconnect()
 
 
-@app.post("/user")
+@app.post("/user", response_model= dict)
 async def create_user(user: schemas.UserCreate):
     db_user = await services.get_user(user.username)
 
@@ -41,14 +41,14 @@ async def create_user(user: schemas.UserCreate):
     if db_user:
         raise fastapi.HTTPException(status_code=400, detail="Email not available")
     
-    return await services.create_user(user)
+    await services.create_user(user)
+    return await services.create_token(user)
 
 
-@app.post("/token")
+@app.post("/token", response_model= dict)
 async def generate_token(form_data: Custom_OAuth2PasswordRequestForm = fastapi.Depends()):
 # async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends()):
     user = await services.authenticate_user(form_data.username, form_data.password)
-    #extra = form_data.email
     # form_data.username -> não é necessariamente o username do usuario; é utilizado "username" apenas por ser padrão da biblioteca
 
     if not user:
@@ -57,13 +57,11 @@ async def generate_token(form_data: Custom_OAuth2PasswordRequestForm = fastapi.D
     return await services.create_token(user)
 
 
-@app.get("/users/me")
+@app.get("/users/me", response_model= schemas.User)
 async def get_user(user: schemas.User = fastapi.Depends(services.get_current_user)):
     return user
 
 
-@app.post("/test")
-async def test(username = Form(default=None, alias="username"), password = Form(default=None, alias="password"), email = Form(default=None, alias="emal"), full_name = Form(default=None, alias="full name")):
-    d = {"username": username, "password": password, "email": email, "full_name": full_name}
-    print(f"\n\n{d}\n\n", flush=True)
+@app.post("/chats")
+async def create_chat(chat: schemas.ChatCreate):
     pass
