@@ -5,6 +5,7 @@
 import services
 import fastapi
 import fastapi.security
+import typing
 
 import database
 import schemas
@@ -41,8 +42,9 @@ async def create_user(user: schemas.UserCreate):
     if db_user:
         raise fastapi.HTTPException(status_code=400, detail="Email not available")
     
-    await services.create_user(user)
-    return await services.create_token(user)
+    db_user = await services.create_user(user)
+    # return await services.create_token(user)
+    return await services.create_token(db_user)
 
 
 @app.post("/token", response_model= dict)
@@ -62,6 +64,66 @@ async def get_user(user: schemas.User = fastapi.Depends(services.get_current_use
     return user
 
 
+@app.get("/users", response_model= typing.List[schemas.User])
+async def get_all_users():
+    return await models.User.objects.all()
+
+
 @app.post("/chats")
 async def create_chat(chat: schemas.ChatCreate):
-    pass
+    return await services.create_chat(chat)
+
+
+@app.get("/chats")
+async def get_chat(id1: int, id2: int):
+    return await services.get_chat(id1, id2)
+
+
+@app.get("/comments")
+async def get_comment(user_id: int, post_id: int):
+    return await services.get_comment(user_id, post_id)
+
+
+@app.post("/comments")
+async def create_comment(comment: schemas.CommentCreate):
+    return await services.create_comment(comment)
+
+
+@app.get("/friendships")
+async def get_friendship(receiver_id: int, sender_id: int):
+    return await services.get_friendship(receiver_id, sender_id)
+
+
+@app.post("/friendships")
+async def create_friendship(friendship: schemas.FriendshipCreate):
+    return await services.create_friendship(friendship)
+
+
+@app.get("/likes")
+async def get_like(post_id: int, user_id: int):
+    return await services.get_like(post_id, user_id)
+
+
+@app.post("/likes")
+async def create_like(like: schemas.LikeCreate):
+    return await services.create_like(like)
+
+
+@app.get("/messages")
+async def get_message(user_id: int, chat_id: int):
+    return await services.get_message(user_id, chat_id)
+
+
+@app.post("/messages")
+async def create_message(message: schemas.MessageCreate):
+    return await services.create_message(message)
+
+
+@app.get("/posts")
+async def get_post(id: int, user_id: int):
+    return await services.get_post(id, user_id)
+
+
+@app.post("/posts")
+async def create_post(post: schemas.PostCreate):
+    return await services.create_post(post)

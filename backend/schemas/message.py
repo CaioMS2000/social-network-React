@@ -3,10 +3,8 @@ import pydantic
 from .metaclasses import CONFIG
 
 class MessageBase(pydantic.BaseModel):
-    read: bool
-    id: int
     chat_id: int
-    created_at: str
+    user_id: int
     inner_text: str
 
 
@@ -16,5 +14,9 @@ class MessageCreate(MessageBase):
 
 
 class Message(MessageBase):
+    read: bool
+    id: int
+    created_at: str
+
     class Config(CONFIG):
         pass
