@@ -30,6 +30,18 @@ async def shutdown() -> None:
         await database_.disconnect()
 
 
+@app.post("/token", response_model= dict)
+async def generate_token(form_data: Custom_OAuth2PasswordRequestForm = fastapi.Depends()):
+# async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends()):
+    user = await services.authenticate_user(form_data.username, form_data.password)
+    # form_data.username -> não é necessariamente o username do usuario; é utilizado "username" apenas por ser padrão da biblioteca
+
+    if not user:
+        raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
+    
+    return await services.create_token(user)
+
+
 @app.post("/user", response_model= dict)
 async def create_user(user: schemas.UserCreate):
     db_user = await services.get_user(user.username)
@@ -47,83 +59,76 @@ async def create_user(user: schemas.UserCreate):
     return await services.create_token(db_user)
 
 
-@app.post("/token", response_model= dict)
-async def generate_token(form_data: Custom_OAuth2PasswordRequestForm = fastapi.Depends()):
-# async def generate_token(form_data: fastapi.security.OAuth2PasswordRequestForm = fastapi.Depends()):
-    user = await services.authenticate_user(form_data.username, form_data.password)
-    # form_data.username -> não é necessariamente o username do usuario; é utilizado "username" apenas por ser padrão da biblioteca
-
-    if not user:
-        raise fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
-    
-    return await services.create_token(user)
-
-
 @app.get("/users/me", response_model= schemas.User)
 async def get_user(user: schemas.User = fastapi.Depends(services.get_current_user)):
     return user
 
 
 @app.get("/users", response_model= typing.List[schemas.User])
-async def get_all_users():
+async def get_all_users(user: schemas.User = fastapi.Depends(services.get_current_user)):
     return await models.User.objects.all()
 
 
+@app.delete("/users/{user_id}")
+async def delete_user(user_id: int, user: schemas.User = fastapi.Depends(services.get_current_user)):
+    return services.delete_user(user_id, user)
+
+
 @app.post("/chats")
-async def create_chat(chat: schemas.ChatCreate):
-    return await services.create_chat(chat)
+async def create_chat(chat: schemas.ChatCreate, user: schemas.User = fastapi.Depends(services.get_current_user)):
+    return await services.create_chat(chat, user)
 
 
 @app.get("/chats")
-async def get_chat(id1: int, id2: int):
+async def get_chat(id1: int, id2: int, user: schemas.User = fastapi.Depends(services.get_current_user)):
     return await services.get_chat(id1, id2)
 
 
 @app.get("/comments")
-async def get_comment(user_id: int, post_id: int):
+async def get_comment(user_id: int, post_id: int, user: schemas.User = fastapi.Depends(services.get_current_user)):
     return await services.get_comment(user_id, post_id)
 
 
 @app.post("/comments")
-async def create_comment(comment: schemas.CommentCreate):
-    return await services.create_comment(comment)
+async def create_comment(comment: schemas.CommentCreate, user: schemas.User = fastapi.Depends(services.get_current_user)):
+    return await services.create_comment(comment, user)
 
 
 @app.get("/friendships")
-async def get_friendship(receiver_id: int, sender_id: int):
+async def get_friendship(receiver_id: int, sender_id: int, user: schemas.User = fastapi.Depends(services.get_current_user)):
     return await services.get_friendship(receiver_id, sender_id)
 
 
 @app.post("/friendships")
-async def create_friendship(friendship: schemas.FriendshipCreate):
-    return await services.create_friendship(friendship)
+async def create_friendship(friendship: schemas.FriendshipCreate, user: schemas.User = fastapi.Depends(services.get_current_user)):
+    return await services.create_friendship(friendship, user)
 
 
 @app.get("/likes")
-async def get_like(post_id: int, user_id: int):
+async def get_like(post_id: int, user_id: int, user: schemas.User = fastapi.Depends(services.get_current_user)):
     return await services.get_like(post_id, user_id)
 
 
 @app.post("/likes")
-async def create_like(like: schemas.LikeCreate):
-    return await services.create_like(like)
+async def create_like(like: schemas.LikeCreate, user: schemas.User = fastapi.Depends(services.get_current_user)):
+    return await services.create_like(like, user)
 
 
 @app.get("/messages")
-async def get_message(user_id: int, chat_id: int):
+async def get_message(user_id: int, chat_id: int, user: schemas.User = fastapi.Depends(services.get_current_user)):
     return await services.get_message(user_id, chat_id)
 
 
 @app.post("/messages")
-async def create_message(message: schemas.MessageCreate):
-    return await services.create_message(message)
+async def create_message(message: schemas.MessageCreate, user: schemas.User = fastapi.Depends(services.get_current_user)):
+    return await services.create_message(message, user)
 
 
 @app.get("/posts")
-async def get_post(id: int, user_id: int):
+async def get_post(id: int, user_id: int, user: schemas.User = fastapi.Depends(services.get_current_user)):
     return await services.get_post(id, user_id)
 
 
 @app.post("/posts")
-async def create_post(post: schemas.PostCreate):
+async def create_post(post: schemas.PostCreate, user: schemas.User = fastapi.Depends(services.get_current_user)):
     return await services.create_post(post)
