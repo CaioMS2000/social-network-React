@@ -81,7 +81,9 @@ async def delete_user(user_id: int, user: schemas.User):
     #     await models.User.objects.delete(id= user_id)
     # except:
     #     raise fastapi.HTTPException(status_code=400, detail="Remove operation failed")
-    await models.User.objects.delete(id= user_id)
+    obj = await models.User.objects.get_or_none(id= user_id)
+    await models.User.remove()
+    # await models.User.objects.delete(id= user_id)
 #================ :USER =================================
 
 #================ CHAT: =================================
